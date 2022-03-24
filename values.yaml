@@ -1,0 +1,29 @@
+server:
+  replicaCount: 2
+
+  image:
+    repository: codebuds/deno-webserver
+    pullPolicy: IfNotPresent
+    tag: 1.3.0
+
+  volumes:
+    name: logs
+    mountPath: /srv/app/pvc
+
+  PV:
+    name: pv-deno-server
+    size: 3Gi
+    path: /data/deno-server/
+    reclaimPolicy: Retain    
+
+  PVC:
+    name: logs
+    size: 1Gi
+
+  service:
+    name: service-deno-webserver
+    type: LoadBalancer
+    ports:
+      protocol: TCP
+      port: 80
+      targetPort: 8080
