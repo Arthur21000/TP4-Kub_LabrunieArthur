@@ -14,11 +14,21 @@ spec:
         app: maria-db
     spec:
       containers:
-        - image: mariadb:10.7
-          imagePullPolicy: Always
+        - image: {{ .Values.mariadb.image.repository }}:{{ .Values.mariadb.image.tag }}
+          imagePullPolicy: {{ .Values.mariadb.image.pullPolicy }}
           name: maria-db
           resources: {}
           env:
+            - name: MYSL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secret
+                  key: user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secret
+                  key: userpassword
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -33,8 +43,8 @@ spec:
             - containerPort: 3306
               name: mysql
           volumeMounts:
-            - name: maria-db
-              mountPath: /var/lib/mysql
+            - name: {{ .Values.mariadb.volumes.name }}
+              mountPath: {{ .Values.mariadb.volumes.mountPath }}
  
       dnsPolicy: ClusterFirst
       restartPolicy: Always
@@ -42,7 +52,7 @@ spec:
       securityContext: {}
       terminationGracePeriodSeconds: 30
       volumes:
-        - name: maria-db
+        - name: {{ .Values.mariadb.volumes.name }}
           persistentVolumeClaim:
             claimName: maria-db
  
@@ -51,39 +61,40 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: maria-db
+  name: {{ .Values.mariadb.PV.name }}
 spec:
   accessModes:
     - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
+  persistentVolumeReclaimPolicy: {{ .Values.mariadb.PV.reclaimPolicy }}
   storageClassName: standard
   capacity:
-    storage: 10Gi
+    storage: {{ .Values.mariadb.PV.size }}
   hostPath:
-    path: /data/maria-db/
+    path: {{ .Values.mariadb.PV.path }}
  
 ---
 
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: maria-db
+  name: {{ .Values.mariadb.PVC.name }}
   namespace: default
 spec:
+  volumeName: {{ .Values.mariadb.PV.name }}
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: {{ .Values.mariadb.PVC.size }}
  
 ---
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: maria-db
+  name: {{ .Values.mariadb.service.name }}
 spec:
   ports:
-    - port: 3306
+    - port: {{ .Values.mariadb.service.port }}
   selector:
     app: maria-db
