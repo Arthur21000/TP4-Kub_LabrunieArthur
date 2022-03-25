@@ -54,7 +54,7 @@ spec:
       volumes:
         - name: {{ .Values.mariadb.volumes.name }}
           persistentVolumeClaim:
-            claimName: maria-db
+            claimName: {{ .Values.mariadb.PVC.name }}
  
 ---
 
