@@ -62,12 +62,6 @@ spec:
   selector:
     app: deno-webserver
   type: {{ .Values.server.service.type }}
-  externalTrafficPolicy: Cluster
-  ipFamilies:
-    - IPv4
-  ipFamilyPolicy: SingleStack
-  allocateLoadBalancerNodePorts: true
-  internalTrafficPolicy: Cluster
 
 ---
 
