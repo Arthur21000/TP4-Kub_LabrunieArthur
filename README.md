@@ -24,4 +24,6 @@ Dans ce déploiement les chose suivante doivent être réalisé :
         - volumes : name, claimName
         - service : name
 
-  
+ Pour qu'il fonctionne, il suffit de cloner le GIT, et de lancer la commande (Être dans le repertoire) :
+  - helm install "nom" .
+  !! Attention de bien avoir les addons de ingress, commande : - helm addons enable ingress
